@@ -55,9 +55,12 @@ CS_CI_OBJ =  cs_add_ci.o cs_amd_ci.o cs_chol_ci.o cs_cholsol_ci.o cs_counts_ci.o
 	cs_norm_ci.o cs_load_ci.o cs_dfs_ci.o cs_reach_ci.o cs_spsolve_ci.o \
 	cs_leaf_ci.o cs_ereach_ci.o cs_randperm_ci.o
 
-CS = $(CS_DI_OBJ) $(CS_CI_OBJ)
+CS = orcmalloc.o $(CS_DI_OBJ) $(CS_CI_OBJ)
 
 $(CS): ../Include/cs.h Makefile
+
+orcmalloc.o: ../Source/orcmalloc.c
+	$(CC) $(CF) $(I) -c $< -o $@
 
 %_di.o : ../Source/%.c
 	$(CC) $(CF) $(I) -c $< -o $@
