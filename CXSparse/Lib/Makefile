@@ -43,18 +43,6 @@ CS_DI_OBJ =  cs_add_di.o cs_amd_di.o cs_chol_di.o cs_cholsol_di.o cs_counts_di.o
 	cs_norm_di.o cs_load_di.o cs_dfs_di.o cs_reach_di.o cs_spsolve_di.o \
 	cs_leaf_di.o cs_ereach_di.o cs_randperm_di.o
 
-CS_DL_OBJ =  cs_add_dl.o cs_amd_dl.o cs_chol_dl.o cs_cholsol_dl.o cs_counts_dl.o \
-	cs_cumsum_dl.o cs_droptol_dl.o cs_dropzeros_dl.o cs_dupl_dl.o \
-	cs_entry_dl.o cs_etree_dl.o cs_fkeep_dl.o cs_gaxpy_dl.o cs_happly_dl.o \
-	cs_house_dl.o cs_ipvec_dl.o cs_lsolve_dl.o cs_ltsolve_dl.o cs_lu_dl.o \
-	cs_lusol_dl.o cs_util_dl.o cs_multiply_dl.o cs_permute_dl.o cs_pinv_dl.o \
-	cs_post_dl.o cs_pvec_dl.o cs_qr_dl.o cs_qrsol_dl.o cs_scatter_dl.o \
-	cs_schol_dl.o cs_sqr_dl.o cs_symperm_dl.o cs_tdfs_dl.o cs_malloc_dl.o \
-	cs_transpose_dl.o cs_compress_dl.o cs_usolve_dl.o cs_utsolve_dl.o \
-	cs_scc_dl.o cs_maxtrans_dl.o cs_dmperm_dl.o cs_updown_dl.o cs_print_dl.o \
-	cs_norm_dl.o cs_load_dl.o cs_dfs_dl.o cs_reach_dl.o cs_spsolve_dl.o \
-	cs_leaf_dl.o cs_ereach_dl.o cs_randperm_dl.o
-
 CS_CI_OBJ =  cs_add_ci.o cs_amd_ci.o cs_chol_ci.o cs_cholsol_ci.o cs_counts_ci.o \
 	cs_cumsum_ci.o cs_droptol_ci.o cs_dropzeros_ci.o cs_dupl_ci.o \
 	cs_entry_ci.o cs_etree_ci.o cs_fkeep_ci.o cs_gaxpy_ci.o cs_happly_ci.o \
@@ -67,36 +55,15 @@ CS_CI_OBJ =  cs_add_ci.o cs_amd_ci.o cs_chol_ci.o cs_cholsol_ci.o cs_counts_ci.o
 	cs_norm_ci.o cs_load_ci.o cs_dfs_ci.o cs_reach_ci.o cs_spsolve_ci.o \
 	cs_leaf_ci.o cs_ereach_ci.o cs_randperm_ci.o
 
-CS_CL_OBJ =  cs_add_cl.o cs_amd_cl.o cs_chol_cl.o cs_cholsol_cl.o cs_counts_cl.o \
-	cs_cumsum_cl.o cs_droptol_cl.o cs_dropzeros_cl.o cs_dupl_cl.o \
-	cs_entry_cl.o cs_etree_cl.o cs_fkeep_cl.o cs_gaxpy_cl.o cs_happly_cl.o \
-	cs_house_cl.o cs_ipvec_cl.o cs_lsolve_cl.o cs_ltsolve_cl.o cs_lu_cl.o \
-	cs_lusol_cl.o cs_util_cl.o cs_multiply_cl.o cs_permute_cl.o cs_pinv_cl.o \
-	cs_post_cl.o cs_pvec_cl.o cs_qr_cl.o cs_qrsol_cl.o cs_scatter_cl.o \
-	cs_schol_cl.o cs_sqr_cl.o cs_symperm_cl.o cs_tdfs_cl.o cs_malloc_cl.o \
-	cs_transpose_cl.o cs_compress_cl.o cs_usolve_cl.o cs_utsolve_cl.o \
-	cs_scc_cl.o cs_maxtrans_cl.o cs_dmperm_cl.o cs_updown_cl.o cs_print_cl.o \
-	cs_norm_cl.o cs_load_cl.o cs_dfs_cl.o cs_reach_cl.o cs_spsolve_cl.o \
-	cs_leaf_cl.o cs_ereach_cl.o cs_randperm_cl.o
-
-CS = cs_convert.o $(CS_DI_OBJ) $(CS_DL_OBJ) $(CS_CI_OBJ) $(CS_CL_OBJ)
+CS = $(CS_DI_OBJ) $(CS_CI_OBJ)
 
 $(CS): ../Include/cs.h Makefile
-
-cs_convert.o: ../Source/cs_convert.c
-	$(CC) $(CF) $(I) -c $< -o $@
 
 %_di.o : ../Source/%.c
 	$(CC) $(CF) $(I) -c $< -o $@
 
-%_dl.o : ../Source/%.c
-	$(CC) $(CF) $(I) -DCS_LONG -c $< -o $@
-
 %_ci.o : ../Source/%.c
 	$(CC) $(CF) $(I) -DCS_COMPLEX -c $< -o $@
-
-%_cl.o : ../Source/%.c
-	$(CC) $(CF) $(I) -DCS_LONG -DCS_COMPLEX -c $< -o $@
 
 static: $(AR_TARGET)
 
@@ -119,7 +86,7 @@ $(INSTALL_LIB)/$(SO_TARGET): $(CS)
 	@mkdir -p $(INSTALL_LIB)
 	@mkdir -p $(INSTALL_INCLUDE)
 	@mkdir -p $(INSTALL_DOC)
-	$(CC) $(SO_OPTS) $^ -o $@ $(LDLIBS)
+	$(CC) $(SO_OPTS) $^ -o $@ $(LDLIBS) -static-libgcc
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_PLAIN) )
 	( cd $(INSTALL_LIB) ; ln -sf $(SO_TARGET) $(SO_MAIN) )
 	$(CP) ../Include/cs.h $(INSTALL_INCLUDE)
