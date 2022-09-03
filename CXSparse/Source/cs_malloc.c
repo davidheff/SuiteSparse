@@ -6,11 +6,11 @@
 #define calloc mxCalloc
 #endif
 
-#include "orcmalloc.h"
-#define malloc _malloc
-#define calloc _calloc
-#define realloc _realloc
-#define free _free
+#include "hostalloc.h"
+#define malloc host_malloc
+#define calloc host_calloc
+#define realloc host_realloc
+#define free host_free
 
 /* wrapper for malloc */
 void *cs_malloc (CS_INT n, size_t size)

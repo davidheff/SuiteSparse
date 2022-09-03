@@ -1,5 +1,6 @@
-#ifndef _ORCMALLOC_H
-#define _ORCMALLOC_H
+#ifndef HOSTMALLOC_H
+#define HOSTMALLOC_H
+
 #include <stdlib.h>
 
 typedef void* (*malloc_func)(size_t size);
@@ -15,11 +16,10 @@ typedef struct
     free_func free;
 } allocator_t;
 
+void *host_malloc(size_t size);
+void *host_calloc(size_t num, size_t size);
+void *host_realloc(void *ptr, size_t new_size);
+void host_free(void *ptr);
+void host_alloc_register(const allocator_t *allocator);
 
-void *_malloc(size_t size);
-void *_calloc(size_t num, size_t size);
-void *_realloc(void *ptr, size_t new_size);
-void _free(void *ptr);
-void cs_register_allocator(const allocator_t *allocator);
-
-#endif
+#endif /* HOSTMALLOC_H */
