@@ -82,7 +82,97 @@ csn *cs_lu (const cs *A, const css *S, double tol)
     Up [n] = unz ;
     Li = L->i ;                     /* fix row indices of L for final pinv */
     for (p = 0 ; p < lnz ; p++) Li [p] = pinv [Li [p]] ;
-    cs_sprealloc (L, 0) ;           /* remove extra space from L and U */
-    cs_sprealloc (U, 0) ;
     return (cs_ndone (N, NULL, xi, x, 1)) ;     /* success */
+}
+
+csn *cs_lu_mem (const cs *A, const css *S, double tol, cs *L, cs *U)
+{
+    csn *N ;
+    CS_ENTRY pivot, *Lx, *Ux, *x ;
+    double a, t ;
+    CS_INT *Lp, *Li, *Up, *Ui, *pinv, *xi, *q, n, ipiv, k, top, p, i, col, lnz,unz;
+    if (!CS_CSC (A) || !S)
+    {
+        L = cs_spfree(L) ;
+        U = cs_spfree(U) ;
+        return (NULL) ;
+    }
+    n = A->n ;
+    q = S->q ; lnz = S->lnz ; unz = S->unz ;
+    x = cs_malloc (n, sizeof (CS_ENTRY)) ;
+    xi = cs_malloc (2*n, sizeof (CS_INT)) ;
+    N = cs_calloc (1, sizeof (csn)) ;
+    if (L && (L->m != n || L->n != n))
+        L = cs_spfree(L) ;
+    if (!L)
+        L = cs_spalloc (n, n, lnz, 1, 0) ;
+    N->L = L ;
+    if (U && (U->m != n || U->n != n))
+        U = cs_spfree(U) ;
+    if (!U)
+        U = cs_spalloc (n, n, unz, 1, 0) ;
+    N->U = U ;
+    N->pinv = pinv = cs_malloc (n, sizeof (CS_INT)) ;
+    Lp = L->p ; Up = U->p ;
+    for (i = 0 ; i < n ; i++) x [i] = 0 ;
+    for (i = 0 ; i < n ; i++) pinv [i] = -1 ;
+    for (k = 0 ; k <= n ; k++) Lp [k] = 0 ;
+    lnz = unz = 0 ;
+    for (k = 0 ; k < n ; k++)
+    {
+
+        Lp [k] = lnz ;
+        Up [k] = unz ;
+        if (lnz + n > L->nzmax) cs_sprealloc (L, 2*L->nzmax + n) ;
+        if (unz + n > U->nzmax) cs_sprealloc (U, 2*U->nzmax + n) ;
+        Li = L->i ; Lx = L->x ; Ui = U->i ; Ux = U->x ;
+        col = q ? (q [k]) : k ;
+        top = cs_spsolve (L, A, col, xi, x, pinv, 1) ;
+
+        ipiv = -1 ;
+        a = -1 ;
+        for (p = top ; p < n ; p++)
+        {
+            i = xi [p] ;
+            if (pinv [i] < 0)
+            {
+                if ((t = CS_ABS (x [i])) > a)
+                {
+                    a = t ;
+                    ipiv = i ;
+                }
+            }
+            else
+            {
+                Ui [unz] = pinv [i] ;
+                Ux [unz++] = x [i] ;
+            }
+        }
+        if (ipiv == -1 || a <= 0) return (cs_ndone (N, NULL, xi, x, 0)) ;
+
+        if (pinv [col] < 0 && CS_ABS (x [col]) >= a*tol) ipiv = col ;
+
+        pivot = x [ipiv] ;
+        Ui [unz] = k ;
+        Ux [unz++] = pivot ;
+        pinv [ipiv] = k ;
+        Li [lnz] = ipiv ;
+        Lx [lnz++] = 1 ;
+        for (p = top ; p < n ; p++)
+        {
+            i = xi [p] ;
+            if (pinv [i] < 0)
+            {
+                Li [lnz] = i ;
+                Lx [lnz++] = x [i] / pivot ;
+            }
+            x [i] = 0 ;
+        }
+    }
+
+    Lp [n] = lnz ;
+    Up [n] = unz ;
+    Li = L->i ;
+    for (p = 0 ; p < lnz ; p++) Li [p] = pinv [Li [p]] ;
+    return (cs_ndone (N, NULL, xi, x, 1)) ;
 }

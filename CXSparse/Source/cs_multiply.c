@@ -30,6 +30,5 @@ cs *cs_multiply (const cs *A, const cs *B)
         if (values) for (p = Cp [j] ; p < nz ; p++) Cx [p] = x [Ci [p]] ;
     }
     Cp [n] = nz ;                       /* finalize the last column of C */
-    cs_sprealloc (C, 0) ;               /* remove extra space from C */
     return (cs_done (C, w, x, 1)) ;     /* success; free workspace, return C */
 }

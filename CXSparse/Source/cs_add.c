@@ -23,6 +23,5 @@ cs *cs_add (const cs *A, const cs *B, CS_ENTRY alpha, CS_ENTRY beta)
         if (values) for (p = Cp [j] ; p < nz ; p++) Cx [p] = x [Ci [p]] ;
     }
     Cp [n] = nz ;                       /* finalize the last column of C */
-    cs_sprealloc (C, 0) ;               /* remove extra space from C */
     return (cs_done (C, w, x, 1)) ;     /* success; free workspace, return C */
 }

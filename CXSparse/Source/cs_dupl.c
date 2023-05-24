@@ -30,5 +30,5 @@ CS_INT cs_dupl (cs *A)
     }
     Ap [n] = nz ;                               /* finalize A */
     cs_free (w) ;                               /* free workspace */
-    return (cs_sprealloc (A, 0)) ;              /* remove extra space from A */
+    return (A) ;
 }

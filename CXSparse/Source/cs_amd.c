@@ -62,7 +62,7 @@ CS_INT *cs_amd (CS_INT order, const cs *A)  /* order 0:natural, 1:Chol, 2:LU, 3:
     P = cs_malloc (n+1, sizeof (CS_INT)) ;     /* allocate result */
     W = cs_malloc (8*(n+1), sizeof (CS_INT)) ; /* get workspace */
     t = cnz + cnz/5 + 2*n ;                 /* add elbow room to C */
-    if (!P || !W || !cs_sprealloc (C, t)) return (cs_idone (P, C, W, 0)) ;
+    if (!P || !W || (t > C->nzmax && !cs_sprealloc (C, t))) return (cs_idone (P, C, W, 0)) ;
     len  = W           ; nv     = W +   (n+1) ; next   = W + 2*(n+1) ;
     head = W + 3*(n+1) ; elen   = W + 4*(n+1) ; degree = W + 5*(n+1) ;
     w    = W + 6*(n+1) ; hhead  = W + 7*(n+1) ;
