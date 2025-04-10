@@ -33,5 +33,5 @@ CS_INT cs_dupl (cs *A)
     }
     Ap [n] = nz ;                               /* finalize A */
     cs_free (w) ;                               /* free workspace */
-    return (A) ;
+    return (!!A) ;
 }
